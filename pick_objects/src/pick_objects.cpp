@@ -6,7 +6,13 @@
 // Define a client for to send goal requests to the move_base server through a SimpleActionClient
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
-move_base_msgs::MoveBaseGoal set_goal (double x, double y) {	
+/* set_goal
+ * params: x: x goal position
+ *         y: y goal position
+ *         w: orientation goal position
+ * returns: goal object
+ */
+move_base_msgs::MoveBaseGoal set_goal (double x, double y, double w) {	
   move_base_msgs::MoveBaseGoal goal;
 
   // set up the frame parameters
@@ -15,7 +21,9 @@ move_base_msgs::MoveBaseGoal set_goal (double x, double y) {
 
   // Define a position and orientation for the robot to reach
   goal.target_pose.pose.position.x = x;
-  goal.target_pose.pose.orientation.w = y;
+  goal.target_pose.pose.position.x = y;
+
+  goal.target_pose.pose.orientation.w = w;
 
   return goal;
 }
@@ -23,7 +31,8 @@ move_base_msgs::MoveBaseGoal set_goal (double x, double y) {
 // Send goals to the program one coordinate at a time with spaces x y message x y message...
 int main(int argc, char** argv){
   // Initialize the simple_navigation_goals node
-  ros::init(argc, argv, "simple_navigation_goals");
+  //ros::init(argc, argv, "simple_navigation_goals");
+  ros::init(argc, argv, "pick_objects");
 
   //tell the action client that we want to spin a thread by default
   MoveBaseClient ac("move_base", true);
@@ -37,7 +46,7 @@ int main(int argc, char** argv){
   //{
     move_base_msgs::MoveBaseGoal goal;
     //goal = set_goal(*argv[i], *argv[++i]);
-    goal = set_goal(0.0, 10.0);
+    goal = set_goal(5.0, 10.0, 5.0);
 
      // Send the goal position and orientation for the robot to reach
     ROS_INFO("Sending goal");
