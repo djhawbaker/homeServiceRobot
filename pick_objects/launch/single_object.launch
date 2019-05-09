@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+  <!-- Arguments for launch file -->
+  <!-- Args should be x y message x y message ... -->
+  <!--<node name="pick_objects" pkg="pick_objects" type="pick_objects" args=" 1 0 FoundGoal"/>-->
+  <node name="single_object" pkg="pick_objects" type="single_object"/>
+
+</launch>
