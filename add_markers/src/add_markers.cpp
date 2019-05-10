@@ -33,6 +33,17 @@
 #include <visualization_msgs/Marker.h>
 // %EndTag(INCLUDES)%
 
+void odom_callback()
+{
+  // If robot has reached the pick up zone, hide it
+
+  // Wait 5 seconds to simulate the "pick up"
+  sleep(5);
+
+  // Then move the marker to the drop off zone
+
+}
+
 // %Tag(INIT)%
 int main( int argc, char** argv )
 {
@@ -40,6 +51,10 @@ int main( int argc, char** argv )
   ros::NodeHandle n;
   ros::Rate r(1);
   ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+
+  ros::Subscriber odom_sub = n.subscribe("odom", 10, odom_callback);
+ 
+
 // %EndTag(INIT)%
 
   // Set our initial shape type to be a cube
@@ -48,11 +63,12 @@ int main( int argc, char** argv )
 // %EndTag(SHAPE_INIT)%
 
 // %Tag(MARKER_INIT)%
+  //while (ros::ok())
   while (ros::ok())
   {
     visualization_msgs::Marker marker;
     // Set the frame ID and timestamp.  See the TF tutorials for information on these.
-    marker.header.frame_id = "/add_markers";
+    marker.header.frame_id = "map";
     marker.header.stamp = ros::Time::now();
 // %EndTag(MARKER_INIT)%
 
@@ -75,7 +91,7 @@ int main( int argc, char** argv )
 
     // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
 // %Tag(POSE)%
-    marker.pose.position.x = 1.0;
+    marker.pose.position.x = 5.0;
     marker.pose.position.y = 0;
     marker.pose.position.z = 0;
     marker.pose.orientation.x = 0.0;
@@ -117,6 +133,7 @@ int main( int argc, char** argv )
     marker_pub.publish(marker);
 // %EndTag(PUBLISH)%
 
+/*
     // Cycle between different shapes
 // %Tag(CYCLE_SHAPES)%
     switch (shape)
@@ -138,6 +155,7 @@ int main( int argc, char** argv )
 
 // %Tag(SLEEP_END)%
     r.sleep();
+*/
   }
 // %EndTag(SLEEP_END)%
 }
