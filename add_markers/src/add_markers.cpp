@@ -13,7 +13,8 @@ void odom_callback( const nav_msgs::Odometry odom )
 {
   if (current_marker.marker.pose == odom.pose )
   {
-    
+    found_marker = true;
+    ROS_INFO("Found the marker");
   }
 }
 
@@ -47,22 +48,34 @@ int main( int argc, char** argv )
       ROS_WARN_ONCE("Please create a subscriber to the marker");
       sleep(1);
     }
-    marker_pub.publish(marker);
+    current_marker.publishMarker();
+    //marker_pub.publish(marker);
 
     if (found_marker)
     {
         // If robot has reached the pick up zone, delete it
         current_marker.marker.action = visualization_msgs::Marker::DELETE;
-        marker_pub.publish(marker);
+        current_marker.publishMarker();
+        //marker_pub.publish(current_marker.marker);
       
         found_marker = false;
         // Wait 5 seconds to simulate the "pick up"
         sleep(5);
 
         // Then move the marker to the drop off zone
+        geometry_msgs::Pose pose;
+        pose.position.x = 0.0;
+        pose.position.x = 0.0;
+        pose.position.x = 0.0;
+        pose.orientation.x = 0.0;
+        pose.orientation.y = 0.0;
+        pose.orientation.z = 0.0;
+        pose.orientation.w = 0.0;
         
         current_marker.marker.action = visualization_msgs::Marker::ADD;
-        marker_pub.publish(marker);
+        current_marker.marker.setMarkerPose(pose);
+        current_marker.publishMarker();
+        //marker_pub.publish(current_marker.marker);
     }
   }
 }
