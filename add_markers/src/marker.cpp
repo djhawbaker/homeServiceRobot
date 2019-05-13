@@ -1,9 +1,9 @@
-#include "marker.h"
+#include "include/marker.h"
 
 
 class Marker (){
   public:
-    void Marker() {
+    Marker() {
 
       marker.action = visualization_msgs::Marker::ADD;
 
@@ -41,7 +41,7 @@ class Marker (){
       marker.lifetime = ros::Duration();
 
       // Initialize the publisher
-      //marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+      marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
     };
 
     void setMarkerPose(geometry_msgs::Pose pose)
