@@ -10,18 +10,18 @@ bool found_marker;
 
 void odom_callback( const nav_msgs::Odometry odom )
 {
-  if ( odom.pose.position.x == 5.0 &&
-       odom.pose.position.y == 0.0 &&
-       odom.pose.position.z == 0.0)
+  if ( odom.pose.pose.position.x == 5.0 &&
+       odom.pose.pose.position.y == 0.0 &&
+       odom.pose.pose.position.z == 0.0)
   {
     // Found the marker
     found_marker = true;
     ROS_INFO("Found the marker");
   }
   if ( found_marker &&
-       odom.pose.position.x == 0.0 &&
-       odom.pose.position.y == 0.0 &&
-       odom.pose.position.z == 0.0)
+       odom.pose.pose.position.x == 0.0 &&
+       odom.pose.pose.position.y == 0.0 &&
+       odom.pose.pose.position.z == 0.0)
   {
     // Made it to the drop off zone
     ROS_INFO("Reached the drop off zone");
@@ -38,6 +38,9 @@ void odom_callback( const nav_msgs::Odometry odom )
     marker.pose.orientation.w = 0.0;
     
     marker.action = visualization_msgs::Marker::ADD;
+
+    ros::NodeHandle n;
+    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
     marker_pub.publish(marker);
   }
 }
@@ -52,7 +55,7 @@ int main( int argc, char** argv )
   ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 
   ros::Subscriber odom_sub = n.subscribe("odom", 10, odom_callback);
-  ros::Subscriber marker = n.subscribe("visualization_marker", 10, marker_callback);
+  //ros::Subscriber marker = n.subscribe("visualization_marker", 10, marker_callback);
  
   // Set our initial shape type to be a cube
   uint32_t shape = visualization_msgs::Marker::CUBE;
