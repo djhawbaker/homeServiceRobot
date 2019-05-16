@@ -10,7 +10,7 @@ sleep 1
 
 # Launch AMCL
 xterm -e " roslaunch my_robot amcl.launch;bash " &
-sleep 1
+sleep 5
 
 # Launch Rviz
 xterm -e " roslaunch my_robot view_navigation.launch;bash " &
