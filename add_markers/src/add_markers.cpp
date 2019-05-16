@@ -64,6 +64,8 @@ int main( int argc, char** argv )
   while (ros::ok())
   {
     visualization_msgs::Marker marker;
+    marker.header.frame_id = "map"; 
+    marker.header.stamp = ros::Time::now();
 
     // Publish the marker
     while (marker_pub.getNumSubscribers() < 1)
