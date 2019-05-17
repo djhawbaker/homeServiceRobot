@@ -82,6 +82,11 @@ int main( int argc, char** argv )
     marker.pose.orientation.z = 0.0;
     marker.pose.orientation.w = 0.0;
 
+    // 1x1x1 = 1m^2
+    marker.scale.x = 1.0;
+    marker.scale.y = 1.0;
+    marker.scale.z = 1.0;
+
     marker.color.r = 0.0f;
     marker.color.g = 1.0f;
     marker.color.b = 0.0f;
@@ -100,8 +105,11 @@ int main( int argc, char** argv )
       sleep(1);
     }
     //current_marker.publishMarker();
+      ROS_WARN_ONCE("Got a subscriber to the marker");
     marker_pub.publish(marker);
     r.sleep();
+    ROS_WARN_ONCE("Post sleep");
+    
 
     if (found_marker)
     {
