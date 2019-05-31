@@ -4,33 +4,32 @@
 #include "nav_msgs/Odometry.h"
 #include "geometry_msgs/Pose.h"
 #include "../include/marker.h"
+#include "add_markers/AddMarker.h"
+#include "add_markers/RemoveMarker.h"
 
 //static Marker current_marker;
 bool found_marker;
+ros::Publisher marker_pub;
+visualization_msgs::Marker marker;
 
 void odom_callback( const nav_msgs::Odometry odom )
 {
-  if ( odom.pose.pose.position.x == 5.0 &&
-       odom.pose.pose.position.y == 0.0 &&
-       odom.pose.pose.position.z == 0.0)
+  if ( odom.pose.pose.position.x == marker.pose.position.x &&
+       odom.pose.pose.position.y == marker.pose.position.x )
   {
     // Found the marker
     found_marker = true;
     ROS_INFO("Found the marker");
   }
-  if ( found_marker &&
-       odom.pose.pose.position.x == 0.0 &&
-       odom.pose.pose.position.y == 0.0 &&
-       odom.pose.pose.position.z == 0.0)
-  {
-    // Made it to the drop off zone
-    ROS_INFO("Reached the drop off zone");
+}
 
-    // Show the marker at the drop off zone
-    visualization_msgs::Marker marker;
+bool handle_add_marker_request(add_markers::AddMarker::Request& req, add_markers::AddMarker::Response& res)
+{
+  ROS_INFO("Add Marker Request received - x: %f, y: %f", (float)req.xPos, (float)req.yPos);
 
-    marker.pose.position.x = 0.0;
-    marker.pose.position.y = 0.0;
+    // Set the marker coordinates
+    marker.pose.position.x = req.xPos;
+    marker.pose.position.y = req.yPos;
     marker.pose.position.z = 0.0;
     marker.pose.orientation.x = 0.0;
     marker.pose.orientation.y = 0.0;
@@ -39,10 +38,15 @@ void odom_callback( const nav_msgs::Odometry odom )
     
     marker.action = visualization_msgs::Marker::ADD;
 
-    ros::NodeHandle n;
-    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
     marker_pub.publish(marker);
-  }
+}
+
+bool handle_remove_marker_request(add_markers::AddMarker::Request& req, add_markers::AddMarker::Response& res)
+{
+  ROS_INFO("Remove Marker Request received");
+
+  marker.action = visualization_msgs::Marker::DELETE;
+  marker_pub.publish(marker);
 }
 
 int main( int argc, char** argv )
@@ -60,7 +64,12 @@ int main( int argc, char** argv )
   // Set our initial shape type to be a cube
   uint32_t shape = visualization_msgs::Marker::CUBE;
     
+  ROS_INFO("Ready to receive Add Marker requests");
+  
+  // Handle ROS communication events
+  ros::spin();
 
+/*
   //while (ros::ok())
   while (ros::ok())
   {
@@ -127,4 +136,6 @@ int main( int argc, char** argv )
 
     }
   }
+  */
+  return 0;
 }
