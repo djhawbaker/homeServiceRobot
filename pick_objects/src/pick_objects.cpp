@@ -77,7 +77,7 @@ void remove_marker() {
 
 int main(int argc, char** argv){
   // Initialize the simple_navigation_goals node
-  ros::init(argc, argv, "add_markers");
+  ros::init(argc, argv, "pick_objects");
 
   // Add the initial marker
   add_marker(5.0, 0.0);
