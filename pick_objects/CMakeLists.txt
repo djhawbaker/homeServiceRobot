@@ -68,10 +68,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   move_base_msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   move_base_msgs
+ )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -200,6 +200,7 @@ include_directories(
 
 add_executable(pick_objects src/pick_objects.cpp)
 target_link_libraries(pick_objects ${catkin_LIBRARIES})
+add_dependencies(pick_objects pick_objects_generate_messages_cpp)
 
 add_executable(single_object src/single_object.cpp)
 target_link_libraries(single_object ${catkin_LIBRARIES})

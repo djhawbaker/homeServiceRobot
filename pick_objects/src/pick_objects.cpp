@@ -2,6 +2,8 @@
 #include "ros/time.h"
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
+#include "add_markers/AddMarker.h"
+#include "add_markers/RemoveMarker.h"
 
 // Define a client for to send goal requests to the move_base server through a SimpleActionClient
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
@@ -41,12 +43,12 @@ bool send_goal(float x, float y, float w) {
   if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
   {
     ROS_INFO("Hooray, the base moved to the goal! X: %f, Y: %f, W: %f", x, y, w);
-    return true
+    return true;
   }
   else
   {
     ROS_INFO("The base failed to move to the goal. X: %f, Y: %f, W: %f Figure out why", x, y, w);
-    return false
+    return false;
   }
 }
 
@@ -58,8 +60,7 @@ void add_marker(float x, float y) {
   srv.request.xPos = x;
   srv.request.yPos = y;
 
-  if ( !client.call(srv) )
-  {
+  if ( !client.call(srv) ) {
     ROS_ERROR( "Failed to call add_markers Add Marker service" );
   }
 
@@ -69,8 +70,7 @@ void remove_marker() {
   // Remove the marker to the map, it's been picked up
   add_markers::RemoveMarker srv;
 
-  if ( !client.call(srv) )
-  {
+  if ( !client.call(srv) ) {
     ROS_ERROR( "Failed to call add_markers Remove Marker service" );
   }
 }
@@ -83,20 +83,18 @@ int main(int argc, char** argv){
   add_marker(5.0, 0.0);
 
   // Tell the robot where the goal is
-  if (send_goal(5.0, 0.0, 0.0))
-  {
+  if (send_goal(5.0, 0.0, 0.0)) {
     // Made it to the marker, remove it
     remove_marker();
     // Wait for 5 seconds
-    ros::Duration::sleep(5);
+    sleep(5);
   }
 
   ROS_INFO("Sending goal to get home");
 
   add_marker(0.0, 0.0);
 
-  if (send_goal(0.0, 0.0, 0.0))
-  {
+  if (send_goal(0.0, 0.0, 0.0)) {
     // Made it to the marker, remove it
     remove_marker();
   }
