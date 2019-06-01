@@ -60,6 +60,8 @@ int main( int argc, char** argv )
 
   ros::Subscriber odom_sub = n.subscribe("odom", 10, odom_callback);
   //ros::Subscriber marker = n.subscribe("visualization_marker", 10, marker_callback);
+  ros::ServiceServer addMarkerServer = n.advertiseService("AddMarker", handle_add_marker_request);
+  ros::ServiceServer removeMarkerServer = n.advertiseService("RemoveMarker", handle_remove_marker_request);
  
   // Set our initial shape type to be a cube
   uint32_t shape = visualization_msgs::Marker::CUBE;

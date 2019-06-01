@@ -8,13 +8,16 @@
 // Define a client for to send goal requests to the move_base server through a SimpleActionClient
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 // Define a global client that can request services
-ros::ServiceClient client;
+ros::ServiceClient client_add;
+ros::ServiceClient client_remove;
 
 bool send_goal(float x, float y, float w) {
   // Send the goal to move to and wait for the robot to reach it
 
   //tell the action client that we want to spin a thread by default
+  // TODO should it be move_base or robot_footprint?
   MoveBaseClient ac("move_base", true);
+ // MoveBaseClient ac("robot_footprint", true);
 
   // Wait 5 sec for move_base action server to come up
   while(!ac.waitForServer(ros::Duration(5.0))){
@@ -60,7 +63,7 @@ void add_marker(float x, float y) {
   srv.request.xPos = x;
   srv.request.yPos = y;
 
-  if ( !client.call(srv) ) {
+  if ( !client_add.call(srv) ) {
     ROS_ERROR( "Failed to call add_markers Add Marker service" );
   }
 
@@ -70,7 +73,7 @@ void remove_marker() {
   // Remove the marker to the map, it's been picked up
   add_markers::RemoveMarker srv;
 
-  if ( !client.call(srv) ) {
+  if ( !client_remove.call(srv) ) {
     ROS_ERROR( "Failed to call add_markers Remove Marker service" );
   }
 }
@@ -78,6 +81,11 @@ void remove_marker() {
 int main(int argc, char** argv){
   // Initialize the simple_navigation_goals node
   ros::init(argc, argv, "pick_objects");
+  
+  ros::NodeHandle nh;
+  ros::ServiceClient client_add = nh.serviceClient<add_markers::AddMarker>("AddMarker");
+  ros::ServiceClient client_remove = nh.serviceClient<add_markers::RemoveMarker>("RemoveMarker");
+
 
   // Add the initial marker
   add_marker(5.0, 0.0);
