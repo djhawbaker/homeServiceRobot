@@ -26,6 +26,11 @@ void odom_callback( const nav_msgs::Odometry odom )
 bool handle_add_marker_request(add_markers::AddMarker::Request& req, add_markers::AddMarker::Response& res)
 {
   ROS_INFO("Add Marker Request received - x: %f, y: %f", (float)req.xPos, (float)req.yPos);
+    marker.header.frame_id = "map"; 
+    marker.header.stamp = ros::Time::now();
+
+    marker.ns = "basic_shapes";
+    marker.id = 0;
 
     // Set the marker coordinates
     marker.pose.position.x = req.xPos;

@@ -79,19 +79,33 @@ void remove_marker() {
 }
 
 int main(int argc, char** argv){
-  // Initialize the simple_navigation_goals node
+  // Initialize the pick_objects node
   ros::init(argc, argv, "pick_objects");
-  
   ros::NodeHandle nh;
+  
+  // Create the service Clients to interact with the add_markers node
   ros::ServiceClient client_add = nh.serviceClient<add_markers::AddMarker>("AddMarker");
   ros::ServiceClient client_remove = nh.serviceClient<add_markers::RemoveMarker>("RemoveMarker");
 
+  // Get goal and home coordinates
+  float goal_x, goal_y, home_x, home_y;
+
+  // Get node name
+  std::string node_name = ros::this_node::getName();
+
+  // Get home and goal coordinates
+  nh.getParam(node_name + "/goal_x", goal_x);
+  nh.getParam(node_name + "/goal_y", goal_y);
+  nh.getParam(node_name + "/home_x", home_x);
+  nh.getParam(node_name + "/home_y", home_y);
+
+  // TODO add bound checks on the inputs based on the size of the map
 
   // Add the initial marker
-  add_marker(5.0, 0.0);
+  add_marker(goal_x, goal_y);
 
-  // Tell the robot where the goal is
-  if (send_goal(5.0, 0.0, 0.0)) {
+  // Tell the robot where the goal is. The robot stays in the 2D ground plane, so z will always be 0
+  if (send_goal(goal_x, goal_y, 0.0)) {
     // Made it to the marker, remove it
     remove_marker();
     // Wait for 5 seconds
@@ -100,9 +114,9 @@ int main(int argc, char** argv){
 
   ROS_INFO("Sending goal to get home");
 
-  add_marker(0.0, 0.0);
+  add_marker(home_x, home_y);
 
-  if (send_goal(0.0, 0.0, 0.0)) {
+  if (send_goal(home_x, home_y, 0.0)) {
     // Made it to the marker, remove it
     remove_marker();
   }

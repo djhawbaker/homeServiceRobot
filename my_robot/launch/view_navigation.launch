@@ -6,4 +6,16 @@
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find my_robot)/rvizConfig/navigation.rviz">
     <param name="base_frame_id" value="robot_footprint"/>
   </node>
+
+  <!-- TODO add actual markers here as inputs -->
+  <!--<node name="add_markers" pkg="add_markers" type="add_markers">-->
+  <node name="pick_objects" pkg="pick_objects" type="pick_objects">
+    <rosparam>
+      goal_x: 5.0
+      goal_y: 0.0
+      home_x: 0.0
+      home_y: 0.0
+    </rosparam>
+    <!--<param name="base_frame_id" value="robot_footprint"/>-->
+  </node>
 </launch>
