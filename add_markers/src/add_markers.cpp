@@ -1,4 +1,3 @@
-
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include "nav_msgs/Odometry.h"
@@ -26,6 +25,7 @@ void odom_callback( const nav_msgs::Odometry odom )
 bool handle_add_marker_request(add_markers::AddMarker::Request& req, add_markers::AddMarker::Response& res)
 {
   ROS_INFO("Add Marker Request received - x: %f, y: %f", (float)req.xPos, (float)req.yPos);
+    visualization_msgs::Marker marker;
     marker.header.frame_id = "map"; 
     marker.header.stamp = ros::Time::now();
 
@@ -39,9 +39,23 @@ bool handle_add_marker_request(add_markers::AddMarker::Request& req, add_markers
     marker.pose.orientation.x = 0.0;
     marker.pose.orientation.y = 0.0;
     marker.pose.orientation.z = 0.0;
-    marker.pose.orientation.w = 0.0;
+    marker.pose.orientation.w = 1.0;
+    
+    // Set the scale
+    marker.scale.x = 1.0;
+    marker.scale.y = 1.0;
+    marker.scale.z = 1.0;
+
+    // Set the color
+    marker.color.r = 0.0f;
+    marker.color.g = 1.0f;
+    marker.color.b = 0.0f;
+    marker.color.a = 1.0f;
+
+    marker.lifetime = ros::Duration();
     
     marker.action = visualization_msgs::Marker::ADD;
+    marker.type = visualization_msgs::Marker::CUBE;
 
     marker_pub.publish(marker);
 }
@@ -61,12 +75,12 @@ int main( int argc, char** argv )
   ros::init(argc, argv, "add_markers");
   ros::NodeHandle n;
   ros::Rate r(1);
-  ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+  marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 
   ros::Subscriber odom_sub = n.subscribe("odom", 10, odom_callback);
   //ros::Subscriber marker = n.subscribe("visualization_marker", 10, marker_callback);
-  ros::ServiceServer addMarkerServer = n.advertiseService("AddMarker", handle_add_marker_request);
-  ros::ServiceServer removeMarkerServer = n.advertiseService("RemoveMarker", handle_remove_marker_request);
+  ros::ServiceServer addMarkerServer = n.advertiseService("/add_markers/AddMarker", handle_add_marker_request);
+  ros::ServiceServer removeMarkerServer = n.advertiseService("/add_markers/RemoveMarker", handle_remove_marker_request);
  
   // Set our initial shape type to be a cube
   uint32_t shape = visualization_msgs::Marker::CUBE;
@@ -76,73 +90,5 @@ int main( int argc, char** argv )
   // Handle ROS communication events
   ros::spin();
 
-/*
-  //while (ros::ok())
-  while (ros::ok())
-  {
-    visualization_msgs::Marker marker;
-    marker.header.frame_id = "map"; 
-    marker.header.stamp = ros::Time::now();
-
-    marker.ns = "basic_shapes";
-    marker.id = 0;
-
-    marker.type = shape;
-    marker.action = visualization_msgs::Marker::ADD;
-
-    marker.pose.position.x = 5.0;
-    marker.pose.position.y = 0.0;
-    marker.pose.position.z = 0.0;
-    marker.pose.orientation.x = 0.0;
-    marker.pose.orientation.y = 0.0;
-    marker.pose.orientation.z = 0.0;
-    marker.pose.orientation.w = 0.0;
-
-    // 1x1x1 = 1m^2
-    marker.scale.x = 1.0;
-    marker.scale.y = 1.0;
-    marker.scale.z = 1.0;
-
-    marker.color.r = 0.0f;
-    marker.color.g = 1.0f;
-    marker.color.b = 0.0f;
-    marker.color.a = 1.0f;
-
-    marker.lifetime = ros::Duration();
-
-    // Publish the marker
-    while (marker_pub.getNumSubscribers() < 1)
-    {
-      if (!ros::ok())
-      {
-        return 0;
-      }
-      ROS_WARN_ONCE("Please create a subscriber to the marker");
-      sleep(1);
-    }
-    //current_marker.publishMarker();
-      ROS_WARN_ONCE("Got a subscriber to the marker");
-    marker_pub.publish(marker);
-    r.sleep();
-    ROS_WARN_ONCE("Post sleep");
-    
-
-    if (found_marker)
-    {
-        // If robot has reached the pick up zone, delete it
-        marker.action = visualization_msgs::Marker::DELETE;
-        marker_pub.publish(marker);
-        //marker_pub.publish(current_marker.marker);
-      
-        //found_marker = false;
-        // Wait 5 seconds to simulate the "pick up"
-        sleep(5);
-  
-        // Set the goal as the drop off zone
-        // TODO
-
-    }
-  }
-  */
   return 0;
 }

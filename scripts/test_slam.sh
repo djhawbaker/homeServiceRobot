@@ -4,7 +4,7 @@ xterm  -e  " source /opt/ros/kinetic/setup.bash; roscore" &
 sleep 5
 
 # Launch turtlebot_world.launch
-xterm -e " roslaunch turtlebot_gazebo turtlebot_world.launch " &
+xterm -e " roslaunch turtlebot_gazebo turtlebot_world.launch; bash " &
 sleep 1
 
 # Launch Gmapping demo or slam Gmapping to perform SLAM

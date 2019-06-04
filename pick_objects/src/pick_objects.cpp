@@ -11,7 +11,7 @@ typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseCl
 ros::ServiceClient client_add;
 ros::ServiceClient client_remove;
 
-bool send_goal(float x, float y, float w) {
+bool send_goal(float x, float y) {
   // Send the goal to move to and wait for the robot to reach it
 
   //tell the action client that we want to spin a thread by default
@@ -33,10 +33,11 @@ bool send_goal(float x, float y, float w) {
   // Define a position and orientation for the robot to reach
   goal.target_pose.pose.position.x = x;
   goal.target_pose.pose.position.y = y;
-  goal.target_pose.pose.orientation.w = w;
+  // Needs a normalized value of 1.0
+  goal.target_pose.pose.orientation.w = 1.0;
 
    // Send the goal position and orientation for the robot to reach
-  ROS_INFO("Sending goal, X: %f, Y: %f, W: %f", x, y, w);
+  ROS_INFO("Sending goal, X: %f, Y: %f", x, y);
   ac.sendGoal(goal);
 
   // Wait an infinite time for the results
@@ -45,12 +46,12 @@ bool send_goal(float x, float y, float w) {
   // Check if the robot reached its goal
   if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
   {
-    ROS_INFO("Hooray, the base moved to the goal! X: %f, Y: %f, W: %f", x, y, w);
+    ROS_INFO("Hooray, the base moved to the goal! X: %f, Y: %f", x, y);
     return true;
   }
   else
   {
-    ROS_INFO("The base failed to move to the goal. X: %f, Y: %f, W: %f Figure out why", x, y, w);
+    ROS_INFO("The base failed to move to the goal. X: %f, Y: %f Figure out why", x, y);
     return false;
   }
 }
@@ -84,20 +85,25 @@ int main(int argc, char** argv){
   ros::NodeHandle nh;
   
   // Create the service Clients to interact with the add_markers node
-  ros::ServiceClient client_add = nh.serviceClient<add_markers::AddMarker>("AddMarker");
-  ros::ServiceClient client_remove = nh.serviceClient<add_markers::RemoveMarker>("RemoveMarker");
+  client_add = nh.serviceClient<add_markers::AddMarker>("/add_markers/AddMarker");
+  client_remove = nh.serviceClient<add_markers::RemoveMarker>("/add_markers/RemoveMarker");
 
   // Get goal and home coordinates
-  float goal_x, goal_y, home_x, home_y;
+  float goal_x = 1.0;
+  float goal_y = 3.0;
+  float home_x = 0.0;
+  float home_y = 0.0;
 
   // Get node name
   std::string node_name = ros::this_node::getName();
 
   // Get home and goal coordinates
+  /*
   nh.getParam(node_name + "/goal_x", goal_x);
   nh.getParam(node_name + "/goal_y", goal_y);
   nh.getParam(node_name + "/home_x", home_x);
   nh.getParam(node_name + "/home_y", home_y);
+  */
 
   // TODO add bound checks on the inputs based on the size of the map
 
@@ -105,7 +111,7 @@ int main(int argc, char** argv){
   add_marker(goal_x, goal_y);
 
   // Tell the robot where the goal is. The robot stays in the 2D ground plane, so z will always be 0
-  if (send_goal(goal_x, goal_y, 0.0)) {
+  if (send_goal(goal_x, goal_y)) {
     // Made it to the marker, remove it
     remove_marker();
     // Wait for 5 seconds
@@ -116,7 +122,7 @@ int main(int argc, char** argv){
 
   add_marker(home_x, home_y);
 
-  if (send_goal(home_x, home_y, 0.0)) {
+  if (send_goal(home_x, home_y)) {
     // Made it to the marker, remove it
     remove_marker();
   }

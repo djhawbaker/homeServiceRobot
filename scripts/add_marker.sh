@@ -5,16 +5,17 @@ xterm -e " source /opt/ros/kinetic/setup.bash; roscore " &
 sleep 5
 
 # Launch turtlebot
-xterm -e " roslaunch my_robot world.launch;bash " &
-sleep 1
+xterm -e " roslaunch my_robot world.launch; bash " &
+sleep 5
 
 # Launch AMCL
-xterm -e " roslaunch my_robot amcl.launch;bash " &
+xterm -e " roslaunch my_robot amcl.launch; bash " &
+
 sleep 5
 
 # Launch Rviz
-xterm -e " roslaunch my_robot view_navigation.launch;bash " &
+xterm -e " roslaunch my_robot view_navigation.launch; bash " &
 sleep 5
 
 # Launch Add Markers 
-xterm -e " rosrun add_markers add_markers;bash " &
+xterm -e " rosrun add_markers add_markers; bash " &
