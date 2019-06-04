@@ -4,7 +4,7 @@
  -->
 <launch>
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find my_robot)/rvizConfig/navigation.rviz">
-    <!--<param name="base_frame_id" value="robot_footprint"/>-->
+    <param name="initial_pose_a" value="1"/>
   </node>
 
   <!-- TODO add actual markers here as inputs -->

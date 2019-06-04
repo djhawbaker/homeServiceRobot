@@ -107,6 +107,11 @@ int main(int argc, char** argv){
 
   // TODO add bound checks on the inputs based on the size of the map
 
+  // Set the inital pose
+
+  // Set z to 1
+  //initial_pose_pub = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/initialpose", 1);
+
   // Add the initial marker
   add_marker(goal_x, goal_y);
 
