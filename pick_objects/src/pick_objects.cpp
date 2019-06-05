@@ -89,8 +89,8 @@ int main(int argc, char** argv){
   client_remove = nh.serviceClient<add_markers::RemoveMarker>("/add_markers/RemoveMarker");
 
   // Get goal and home coordinates
-  float goal_x = 1.0;
-  float goal_y = 3.0;
+  float goal_x = 0.0;
+  float goal_y = -2.0;
   float home_x = 0.0;
   float home_y = 0.0;
 

@@ -11,7 +11,7 @@
         <wheelSeparation>0.3</wheelSeparation>
         <wheelDiameter>0.2</wheelDiameter>
         <robotBaseFrame>robot_footprint</robotBaseFrame>
-        <torque>20</torque>
+        <torque>10</torque>
         <commandTopic>cmd_vel</commandTopic>
         <broadcastTF>true</broadcastTF>
         <odometryTopic>odom</odometryTopic>
