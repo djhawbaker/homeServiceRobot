@@ -14,14 +14,13 @@ bool marker_set = false;
 ros::Publisher marker_pub;
 //ros::Publisher found_marker_pub;
 visualization_msgs::Marker marker;
-float MARKER_RADIUS = 0.1;
+float MARKER_RADIUS = 0.01;
 typedef actionlib::SimpleActionServer<move_base_msgs::MoveBaseAction> MoveBaseServer;
-ros::NodeHandle nh;
 
 void odom_callback( const nav_msgs::Odometry odom )
 {
-  ROS_INFO("Odom callback x: %f, y: %f", marker.pose.position.x, marker.pose.position.y);
-  ROS_INFO("Odom pose : %f, y: %f", odom.pose.pose.position.x, odom.pose.pose.position.y);
+  //ROS_INFO("Odom callback x: %f, y: %f", marker.pose.position.x, marker.pose.position.y);
+  //ROS_INFO("Odom pose : %f, y: %f", odom.pose.pose.position.x, odom.pose.pose.position.y);
   if ( marker_set &&
        ((marker.pose.position.x - MARKER_RADIUS ) <= odom.pose.pose.position.x )&&
        (odom.pose.pose.position.x <= ( marker.pose.position.x + MARKER_RADIUS )) &&
@@ -33,7 +32,10 @@ void odom_callback( const nav_msgs::Odometry odom )
     ROS_INFO("Found the marker");
 
     // Publish that the marker was found
-    MoveBaseServer server(nh, "move_base");
+    MoveBaseServer server("move_base", false);
+    server.start();
+    // Wait 5 sec for move_base action server to come up
+    
     move_base_msgs::MoveBaseResult result;
     server.setSucceeded(result);
 
@@ -100,6 +102,7 @@ int main( int argc, char** argv )
   ros::init(argc, argv, "add_markers");
   ros::NodeHandle n;
   ros::Rate r(1);
+ 
   marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
   //found_marker_pub = n.advertise<add_markers::FoundMarker>("found_marker", 1);
 

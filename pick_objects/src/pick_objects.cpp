@@ -15,9 +15,7 @@ bool send_goal(float x, float y) {
   // Send the goal to move to and wait for the robot to reach it
 
   //tell the action client that we want to spin a thread by default
-  // TODO should it be move_base or robot_footprint?
   MoveBaseClient ac("move_base", true);
- // MoveBaseClient ac("robot_footprint", true);
 
   // Wait 5 sec for move_base action server to come up
   while(!ac.waitForServer(ros::Duration(5.0))){
