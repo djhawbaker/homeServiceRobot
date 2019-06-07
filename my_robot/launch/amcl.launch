@@ -15,7 +15,7 @@
       <!-- Set the initial pose -->
       <param name="initial_pose_x" value="0.0"/>
       <param name="initial_pose_y" value="0.0"/>
-      <param name="initial_pose_a" value="-1.57"/>
+      <param name="initial_pose_a" value="0.0"/>
 
       <param name="min_particles" value="100"/>
       <param name="max_particles" value="3000"/>
