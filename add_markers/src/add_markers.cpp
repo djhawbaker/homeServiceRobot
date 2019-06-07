@@ -6,15 +6,18 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/server/simple_action_server.h>
 #include "add_markers/AddMarker.h"
-#include "add_markers/RemoveMarker.h"
+//#include "add_markers/RemoveMarker.h"
 
 //static Marker current_marker;
 bool found_marker;
 bool marker_set = false;
 ros::Publisher marker_pub;
 //ros::Publisher found_marker_pub;
-visualization_msgs::Marker marker;
-float MARKER_RADIUS = 0.01;
+//visualization_msgs::Marker marker;
+float MARKER_RADIUS = 0.3;
+float MARKER_X_POS = 1000;
+float MARKER_Y_POS = 1000;
+
 typedef actionlib::SimpleActionServer<move_base_msgs::MoveBaseAction> MoveBaseServer;
 
 void odom_callback( const nav_msgs::Odometry odom )
@@ -22,10 +25,10 @@ void odom_callback( const nav_msgs::Odometry odom )
   //ROS_INFO("Odom callback x: %f, y: %f", marker.pose.position.x, marker.pose.position.y);
   //ROS_INFO("Odom pose : %f, y: %f", odom.pose.pose.position.x, odom.pose.pose.position.y);
   if ( marker_set &&
-       ((marker.pose.position.x - MARKER_RADIUS ) <= odom.pose.pose.position.x )&&
-       (odom.pose.pose.position.x <= ( marker.pose.position.x + MARKER_RADIUS )) &&
-       (( marker.pose.position.y - MARKER_RADIUS ) <= odom.pose.pose.position.y) &&
-       (odom.pose.pose.position.y <= ( marker.pose.position.y + MARKER_RADIUS )))
+       ((MARKER_X_POS - MARKER_RADIUS ) <= odom.pose.pose.position.x )&&
+       (odom.pose.pose.position.x <= ( MARKER_X_POS + MARKER_RADIUS )) &&
+       (( MARKER_Y_POS - MARKER_RADIUS ) <= odom.pose.pose.position.y) &&
+       (odom.pose.pose.position.y <= ( MARKER_Y_POS + MARKER_RADIUS )))
   {
     // Found the marker
     found_marker = true;
@@ -39,17 +42,17 @@ void odom_callback( const nav_msgs::Odometry odom )
     move_base_msgs::MoveBaseResult result;
     server.setSucceeded(result);
 
-
-    /* add_markers::FoundMarker foundMarker;
-    foundMarker.FOUND = true;
-    found_marker_pub.publish(foundMarker);
-    */
+   //  add_markers::FoundMarker foundMarker;
+    //foundMarker.FOUND = true;
+   // found_marker_pub.publish(foundMarker);
+    
   }
 }
 
-bool handle_add_marker_request(add_markers::AddMarker::Request& req, add_markers::AddMarker::Response& res)
+bool handle_marker_request(add_markers::AddMarker::Request& req, add_markers::AddMarker::Response& res)
 {
-  ROS_INFO("Add Marker Request received - x: %f, y: %f", (float)req.xPos, (float)req.yPos);
+  if (req.show == true) {
+    ROS_INFO("Add Marker Request received - x: %f, y: %f", (float)req.xPos, (float)req.yPos);
     visualization_msgs::Marker marker;
     marker.header.frame_id = "map"; 
     marker.header.stamp = ros::Time::now();
@@ -67,9 +70,9 @@ bool handle_add_marker_request(add_markers::AddMarker::Request& req, add_markers
     marker.pose.orientation.w = 1.0;
     
     // Set the scale
-    marker.scale.x = 1.0;
-    marker.scale.y = 1.0;
-    marker.scale.z = 1.0;
+    marker.scale.x = MARKER_RADIUS * 2;
+    marker.scale.y = MARKER_RADIUS * 2;
+    marker.scale.z = MARKER_RADIUS * 2;
 
     // Set the color
     marker.color.r = 0.0f;
@@ -82,17 +85,24 @@ bool handle_add_marker_request(add_markers::AddMarker::Request& req, add_markers
     marker.action = visualization_msgs::Marker::ADD;
     marker.type = visualization_msgs::Marker::CUBE;
 
-    marker_pub.publish(marker);
     marker_set = true;
-}
+    MARKER_X_POS = req.xPos;
+    MARKER_Y_POS = req.yPos;
+    marker_pub.publish(marker);
+  }
+  else{
 
-bool handle_remove_marker_request(add_markers::AddMarker::Request& req, add_markers::AddMarker::Response& res)
-{
-  ROS_INFO("Remove Marker Request received");
+//bool handle_remove_marker_request(add_markers::RemoveMarker::Request& req, add_markers::RemoveMarker::Response& res)
+    ROS_INFO("Remove Marker Request received");
 
-  marker.action = visualization_msgs::Marker::DELETE;
-  marker_set = false;
-  marker_pub.publish(marker);
+    visualization_msgs::Marker marker;
+    marker.ns = "basic_shapes";
+    marker.id = 0;
+
+    marker.action = visualization_msgs::Marker::DELETE;
+    marker_set = false;
+    marker_pub.publish(marker);
+  }
 }
 
 int main( int argc, char** argv )
@@ -108,8 +118,8 @@ int main( int argc, char** argv )
 
   ros::Subscriber odom_sub = n.subscribe("odom", 10, odom_callback);
   //ros::Subscriber marker = n.subscribe("visualization_marker", 10, marker_callback);
-  ros::ServiceServer addMarkerServer = n.advertiseService("/add_markers/AddMarker", handle_add_marker_request);
-  ros::ServiceServer removeMarkerServer = n.advertiseService("/add_markers/RemoveMarker", handle_remove_marker_request);
+  ros::ServiceServer addMarkerServer = n.advertiseService("/add_markers/AddMarker", handle_marker_request);
+  //ros::ServiceServer removeMarkerServer = n.advertiseService("/add_markers/RemoveMarker", handle_remove_marker_request);
  
   // Set our initial shape type to be a cube
   uint32_t shape = visualization_msgs::Marker::CUBE;

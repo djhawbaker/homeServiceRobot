@@ -1,4 +1,5 @@
 float64 xPos
 float64 yPos
+bool show
 ---
 string msg_feedback

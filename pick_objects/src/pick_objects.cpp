@@ -9,7 +9,7 @@
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 // Define a global client that can request services
 ros::ServiceClient client_add;
-ros::ServiceClient client_remove;
+//ros::ServiceClient client_remove;
 
 bool send_goal(float x, float y) {
   // Send the goal to move to and wait for the robot to reach it
@@ -38,7 +38,8 @@ bool send_goal(float x, float y) {
   ROS_INFO("Sending goal, X: %f, Y: %f", x, y);
   ac.sendGoal(goal);
 
-  // Wait an infinite time for the results
+  // Wait 30 seconds for the results
+  //ac.waitForResult(ros::Duration(30.0));
   ac.waitForResult();
 
   // Check if the robot reached its goal
@@ -61,6 +62,7 @@ void add_marker(float x, float y) {
 
   srv.request.xPos = x;
   srv.request.yPos = y;
+  srv.request.show = true;
 
   if ( !client_add.call(srv) ) {
     ROS_ERROR( "Failed to call add_markers Add Marker service" );
@@ -70,9 +72,15 @@ void add_marker(float x, float y) {
 
 void remove_marker() {
   // Remove the marker to the map, it's been picked up
-  add_markers::RemoveMarker srv;
+  //add_markers::RemoveMarker srv;
+  //srv.request.remove = true;
+  add_markers::AddMarker srv;
 
-  if ( !client_remove.call(srv) ) {
+  srv.request.xPos = 0;
+  srv.request.yPos = 0;
+  srv.request.show = false;
+
+  if ( !client_add.call(srv) ) {
     ROS_ERROR( "Failed to call add_markers Remove Marker service" );
   }
 }
@@ -84,13 +92,13 @@ int main(int argc, char** argv){
   
   // Create the service Clients to interact with the add_markers node
   client_add = nh.serviceClient<add_markers::AddMarker>("/add_markers/AddMarker");
-  client_remove = nh.serviceClient<add_markers::RemoveMarker>("/add_markers/RemoveMarker");
+  //client_remove = nh.serviceClient<add_markers::RemoveMarker>("/add_markers/RemoveMarker");
 
   // Get goal and home coordinates
-  float goal_x = 0.0;
-  float goal_y = -2.0;
-  float home_x = 0.0;
-  float home_y = 0.0;
+  float goal_x = 3.5;
+  float goal_y = 2.0;
+  float home_x = -1;
+  float home_y = -2;
 
   // Get node name
   std::string node_name = ros::this_node::getName();
