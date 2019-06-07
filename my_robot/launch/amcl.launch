@@ -35,6 +35,9 @@
       <!--<remap from="scan" to="my_robot/laser/scan"/>-->
       <param name="base_global_planner" value="navfn/NavfnROS"/>
       <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
+      <param name="oscillation_timeout" value="3.0"/>
+      <param name="oscillation_distance" value="1.0"/>
+
       <!-- Config files -->
       <rosparam file="$(find my_robot)/config/costmap_common_params.yaml" command="load" ns="global_costmap"/>
       <rosparam file="$(find my_robot)/config/costmap_common_params.yaml" command="load" ns="local_costmap"/>
