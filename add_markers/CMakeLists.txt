@@ -58,7 +58,6 @@ find_package(catkin REQUIRED COMPONENTS
  add_service_files(
    FILES
    AddMarker.srv
-   RemoveMarker.srv
  )
 
 ## Generate actions in the 'action' folder

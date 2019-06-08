@@ -17,8 +17,8 @@ xterm -e " roslaunch my_robot view_navigation.launch;" &
 sleep 10
 
 # Launch Add Markers 
-xterm -e " rosrun add_markers add_markers; bash" &
+xterm -e " rosrun add_markers add_markers;" &
 sleep 5
 
 # Launch Pick Objects 
-xterm -e " rosrun pick_objects pick_objects; bash" &
+xterm -e " rosrun pick_objects pick_objects;" &
