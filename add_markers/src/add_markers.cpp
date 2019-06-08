@@ -6,14 +6,10 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/server/simple_action_server.h>
 #include "add_markers/AddMarker.h"
-//#include "add_markers/RemoveMarker.h"
 
-//static Marker current_marker;
 bool found_marker;
 bool marker_set = false;
 ros::Publisher marker_pub;
-//ros::Publisher found_marker_pub;
-//visualization_msgs::Marker marker;
 float MARKER_RADIUS = 0.3;
 float MARKER_X_POS = 1000;
 float MARKER_Y_POS = 1000;
@@ -22,8 +18,6 @@ typedef actionlib::SimpleActionServer<move_base_msgs::MoveBaseAction> MoveBaseSe
 
 void odom_callback( const nav_msgs::Odometry odom )
 {
-  //ROS_INFO("Odom callback x: %f, y: %f", marker.pose.position.x, marker.pose.position.y);
-  //ROS_INFO("Odom pose : %f, y: %f", odom.pose.pose.position.x, odom.pose.pose.position.y);
   if ( marker_set &&
        ((MARKER_X_POS - MARKER_RADIUS ) <= odom.pose.pose.position.x )&&
        (odom.pose.pose.position.x <= ( MARKER_X_POS + MARKER_RADIUS )) &&
@@ -37,15 +31,9 @@ void odom_callback( const nav_msgs::Odometry odom )
     // Publish that the marker was found
     MoveBaseServer server("move_base", false);
     server.start();
-    // Wait 5 sec for move_base action server to come up
     
     move_base_msgs::MoveBaseResult result;
     server.setSucceeded(result);
-
-   //  add_markers::FoundMarker foundMarker;
-    //foundMarker.FOUND = true;
-   // found_marker_pub.publish(foundMarker);
-    
   }
 }
 
@@ -92,7 +80,6 @@ bool handle_marker_request(add_markers::AddMarker::Request& req, add_markers::Ad
   }
   else{
 
-//bool handle_remove_marker_request(add_markers::RemoveMarker::Request& req, add_markers::RemoveMarker::Response& res)
     ROS_INFO("Remove Marker Request received");
 
     visualization_msgs::Marker marker;
@@ -111,18 +98,12 @@ int main( int argc, char** argv )
 
   ros::init(argc, argv, "add_markers");
   ros::NodeHandle n;
-  ros::Rate r(1);
+  //ros::Rate r(1);
  
+  // Setup the communication with other nodes
   marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
-  //found_marker_pub = n.advertise<add_markers::FoundMarker>("found_marker", 1);
-
   ros::Subscriber odom_sub = n.subscribe("odom", 10, odom_callback);
-  //ros::Subscriber marker = n.subscribe("visualization_marker", 10, marker_callback);
   ros::ServiceServer addMarkerServer = n.advertiseService("/add_markers/AddMarker", handle_marker_request);
-  //ros::ServiceServer removeMarkerServer = n.advertiseService("/add_markers/RemoveMarker", handle_remove_marker_request);
- 
-  // Set our initial shape type to be a cube
-  uint32_t shape = visualization_msgs::Marker::CUBE;
     
   ROS_INFO("Ready to receive Add Marker requests");
   
