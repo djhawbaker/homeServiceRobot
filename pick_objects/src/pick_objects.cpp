@@ -5,11 +5,9 @@
 #include "add_markers/AddMarker.h"
 #include "add_markers/RemoveMarker.h"
 
-// Define a client for to send goal requests to the move_base server through a SimpleActionClient
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 // Define a global client that can request services
 ros::ServiceClient client_add;
-//ros::ServiceClient client_remove;
 
 bool send_goal(float x, float y) {
   // Send the goal to move to and wait for the robot to reach it
@@ -34,12 +32,11 @@ bool send_goal(float x, float y) {
   // Needs a normalized value of 1.0
   goal.target_pose.pose.orientation.w = 1.0;
 
-   // Send the goal position and orientation for the robot to reach
+  // Send the goal position and orientation for the robot to reach
   ROS_INFO("Sending goal, X: %f, Y: %f", x, y);
   ac.sendGoal(goal);
 
   // Wait 30 seconds for the results
-  //ac.waitForResult(ros::Duration(30.0));
   ac.waitForResult();
 
   // Check if the robot reached its goal
@@ -72,8 +69,6 @@ void add_marker(float x, float y) {
 
 void remove_marker() {
   // Remove the marker to the map, it's been picked up
-  //add_markers::RemoveMarker srv;
-  //srv.request.remove = true;
   add_markers::AddMarker srv;
 
   srv.request.xPos = 0;
@@ -92,7 +87,6 @@ int main(int argc, char** argv){
   
   // Create the service Clients to interact with the add_markers node
   client_add = nh.serviceClient<add_markers::AddMarker>("/add_markers/AddMarker");
-  //client_remove = nh.serviceClient<add_markers::RemoveMarker>("/add_markers/RemoveMarker");
 
   // Get goal and home coordinates
   float goal_x = 3.5;
@@ -103,39 +97,24 @@ int main(int argc, char** argv){
   // Get node name
   std::string node_name = ros::this_node::getName();
 
-  // Get home and goal coordinates
-  /*
-  nh.getParam(node_name + "/goal_x", goal_x);
-  nh.getParam(node_name + "/goal_y", goal_y);
-  nh.getParam(node_name + "/home_x", home_x);
-  nh.getParam(node_name + "/home_y", home_y);
-  */
-
-  // TODO add bound checks on the inputs based on the size of the map
-
-  // Set the inital pose
-
-  // Set z to 1
-  //initial_pose_pub = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/initialpose", 1);
-
   // Add the initial marker
   add_marker(goal_x, goal_y);
 
   // Tell the robot where the goal is. The robot stays in the 2D ground plane, so z will always be 0
+  ROS_INFO("Sending coordinates for the marker location");
+
   if (send_goal(goal_x, goal_y)) {
     // Made it to the marker, remove it
     remove_marker();
-    // Wait for 5 seconds
+    // Wait for 5 seconds to simulate picking up the marker
     sleep(5);
   }
 
-  ROS_INFO("Sending goal to get home");
-
-  add_marker(home_x, home_y);
+  ROS_INFO("Sending coordinates for the drop off location");
 
   if (send_goal(home_x, home_y)) {
-    // Made it to the marker, remove it
-    remove_marker();
+    // Made it to the dropoff location, add the marker
+    add_marker(home_x, home_y);
   }
 
   return 0;
