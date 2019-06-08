@@ -1,7 +1,6 @@
 # Home Service Robot 
-Robo Nano Degree: Final project. Robot to navigate a home
-
-This project is to build a robot that will map and navigate an environment with specific waypoints.
+Robo Nano Degree: Final project. Robot to navigate a home, collect a marker and return it to a drop-off location.
+The marker is originally unknown to the robot and the coordinates are published to it once it needs to be collected.
 
 ### To run, setup a terminal and run the following
 1. cd catkin_ws
@@ -11,7 +10,6 @@ This project is to build a robot that will map and navigate an environment with 
 5. ./home_service.sh
 
 ## What it does
-
 The Home Service Robot navigates through an environment to pick up markers and take them back to a home base. 
 
 The robot is loaded in the environment and the pick objects node selects where the marker should be. It communicates that to the add_markers node that creates the marker and the AMCL node that handles the path planning to navigate to the marker. 
